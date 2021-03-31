@@ -1,0 +1,81 @@
+HttpClient
+
+Introduced in java 11
+Replaces HttpURLConnectiion API
+Supports HTTP/2, WebSocket
+Sync adn async Methods
+
+Goal: easy to use in common cases, powerful enough for complex ones
+
+Important Types:
+1) HttpClient: two methods: send and sendAsync.
+               it is created using builder pattern "HttpClient.Builder"
+2) HttpRequest: URI Headers Methods
+               it is created using Builder "HttpRequest.Builder". it is immutable.
+3) HttpResponse: uri headers statusCode body
+                it is created using
+
+
+Example:
+
+HttpClient client = HttpClient.newHttpClient();
+
+HttpRequest request = HttpRequest.newBuilder(URI.create("https://www.google.com/")).build();
+
+HttpResponse<String>  response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+
+
+What's Wrong with HttpURLConnection?
+1) it is very old. Designed around HTTP/1.1 timeframe. it before Generics, Enums, Lamdbas
+
+
+Alternatives of HttpURLConnection
+
+1) Apache HttpComponents
+2) Square's OkHttp
+3) JAX-RS REST Client
+
+
+BodyHandlers
+
+ofString()          string
+ofByteArray         byte[]
+ofFile(path)        Path
+ofLines()           Stream<String>
+discarding()        Void
+
+
+Robust HttpClient Configuration
+Configuration affects all requests i.e immutable. hence inorder to have changeable configuration
+create multiple instance of HttpClient when necessary.
+
+HTTP Version:
+HttpClient.newBuilder().version(Version.HTTP_2)
+
+Priority
+HttpClient.newBuilder().priority(1)
+Only affects HTTP/2 request
+Range 1-256 (inclusive)
+
+Redirection
+HttpClient.newBuilder().followRedirects(Redirect.Normal)
+
+HttpClient.Redirect.NEVER  --> default
+HttpClient.Redirect.ALWAYS
+HttpClient.Redirect.NORMAL --> Redirect from secure to non secure is checked. basically it will not redirect to non secure
+
+Get previous response:
+Optional<HttpResponse> previousResponse = HttpResponse::previousResponse
+
+Connection Timeout
+HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(3))
+
+default is infinity
+java.time.Duration
+
+
+Custom Executor
+
+Executor exec = Executors.newCachedThreadPool();
+HttpClient.newBuilder().executor(exec);
