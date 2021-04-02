@@ -79,3 +79,135 @@ Custom Executor
 
 Executor exec = Executors.newCachedThreadPool();
 HttpClient.newBuilder().executor(exec);
+
+
+HTTP Requests with Body
+
+BodyPublisher
+
+HttpRequest.Builder
+POST(BodyPublisher publisher)
+PUT(BodyPublisher publisher)
+method(String method, BodyPublisher publisher)
+
+Pre-defined BodyPublishers
+- ofString(String Body)
+- ofByteArray(byte[] buf)
+- ofFile(Path p)
+- ofInputStream(Supplier<? extends InputStream> s)
+- noBody() - empty body
+
+eg:
+HttpRequest.newBuilder(URI.create("..."))
+            .POST(BodyPublishers.ofString("payload"))
+            .build();
+
+
+Headers & Cookies
+Headers: are key value pairs. That contains additional metadata about the request.
+        Host: "www.example.com"  -> configured default
+        Accept: text/html        -> indication type of response client expect
+eg:
+
+HttpRequest.newBuilder(URI.create("www.  ")
+           .header("Accept", "text/html")
+           .header("User-Agent", "Java")
+           .build();
+
+           OR
+
+HttpRequest.newBuilder(URI.create("www.   ")
+           . headers("Accept", "text/html"
+                     "User-Agent", "Java")
+           .build();
+
+           OR
+
+      setHeader(String name, String value)
+
+
+Cookies
+Http is stateless request. it mean between to consecutive request it does not maintain state of the previous state.
+Cookies contains states mainly defined by servers that is send to client as response of a request and later
+send to server to have memory of the state of the request.
+
+server includes header as
+Set-Cookie: <name> = <value>
+
+usually used by browsers to maintain state of the request.
+
+
+
+Security:
+For secure connection HttpClient use TLS (Transport Layer Security).
+
+Self-signed Certificates
+Mutual TLS Authentication
+
+override of Http config for secure connection: SSLContext is use.
+
+HttpClient.newBuilder()
+          .sslContext(SSLContext.getDefault())
+          .build()
+
+
+-Djavax.net.ssl.trustStore
+-Djavax.net.ssl.keyStore
+
+SSLParameters
+SSLParameters params = new SSLParameters(
+   new String[] {"TLSv1.2"},
+   new String[] {"TLS_AES_128_GCM_SHA256"}
+ );
+
+ HttpClient.newBuilder()
+           .sslParameters(params)
+           .build();
+
+Self-Signed Certificates
+Add Certificate Authority to a trust store
+$JAVA_HOME/bin/keytool
+-Djavax.net.ssl.trustStore /path/to/truststore
+
+Create custom SSLContext with trust store
+
+Mutual Authentication between client and server
+- add client certificate to a key store
+  $JAVA_HOME/bin/keytool
+  -Djavax.net.ssl.keyStore /path/to/keystore
+
+Create custom SSLContext with key store
+
+
+WebSocket:
+the regular http interaction that we seen so far are direct request - response oriented. (i.e single Http request and get back single Http response)
+
+WebSocket are full-duplex bidirectional communication between client and server. A client can open a WebSocket chanel to a server and it will open
+till client and server wants to communicate. WebSocket use "Message-based-protocol" to communicate. Messages can flow both ways, client can send
+message, server can send messages or both send messages at the same time.
+
+use for realtime web application.
+websocket protocol itself is a binary protocol.
+
+Non-Secure:
+CompletableFuture<WebSocket> wsFuture = HttpClient.newHttpClient().newWebSocketBuilder()
+                                        .newWebSocketBuilder(
+                                            URI.create("ws://server-url"),
+                                            webSocketListener);
+Secure:
+CompletableFuture<WebSocket> wsFuture = HttpClient.newHttpClient().newWebSocketBuilder()
+                                        .newWebSocketBuilder(
+                                            URI.create("wss://server-url"),
+                                            webSocketListener);
+
+WebSocket.Listener:
+three methods: onOpen(), onClose(), onError()
+two methods to communicate: onText(), -> send text messages
+                            onBinary() -> send binary messages
+
+onPing():
+onPong():
+
+
+
+
