@@ -14,7 +14,7 @@ public class WebsocketDemo {
 
     public static void main(String[] args) throws Exception
     {
-        int msgCount = 5;
+        int msgCount = 25;
         CountDownLatch receiveLatch = new CountDownLatch(msgCount);
 
         CompletableFuture<WebSocket> webSocketCompletableFuture = HttpClient.newHttpClient()
@@ -25,7 +25,7 @@ public class WebsocketDemo {
                 );
         webSocketCompletableFuture.thenAccept(
                 webSocket -> {
-                    webSocket.request(msgCount);
+                    webSocket.request(20);
 
                     for(int i=0; i<msgCount; i++){
                         webSocket.sendText("Message " + i, true);
