@@ -1,4 +1,4 @@
-package com.company.emrys.corejava;
+package spliterator;
 
 import java.util.Spliterator;
 import java.util.function.Consumer;

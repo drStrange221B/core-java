@@ -1,0 +1,8 @@
+Why do we ask for text files?
+
+They are simpler and faster to create
+they are smaller so your zip files are smaller and take up less room on our system
+they are more portable - a machine running just about any operating system can read them
+TAs may be grading assignments on Unix systems instead of Windows systems
+and they are easier to check for plagiarism
+In programming assignments, the files you should turn in will be listed and their types will be stated. If you don't match this, you will be asked to try again, and your assignment will not be considered turned in until you succeed in giving the formats requested.

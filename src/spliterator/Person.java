@@ -1,4 +1,4 @@
-package com.company.emrys.corejava;
+package spliterator;
 
 public class Person {
     private String name;

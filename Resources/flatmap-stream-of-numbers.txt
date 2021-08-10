@@ -1,0 +1,28 @@
+Stream Concatenation
+
+Path path = Paths.get("files/text1.txt");
+try(Stream<String> s1 = Files.lines(path1);
+    Stream<String> s2 = Files.lines(path2);
+    Stream<String> s3 = Files.lines(path2);){
+
+    Stream<String> s10 = Stream.concat(s1,s2);
+    Stream<String> s20 = Stream.concat(Stream.concat(s1,s2), s3);
+}catch ( Exception e){
+    // handle the exception
+}
+
+- risk of a StackOverflow exception
+- The Elements of the first stream are followed by all the elements of the second stream
+- So the order of the elements is preserved, which has a cost
+
+Streams of Streams
+- There is another method to merge streams
+ Stream<Stream<String>>  s = Stream.of(s1, s2, s3); varargs
+
+
+Method flatMap()
+- The flatMap operation is a special operation that takes a function
+  - So it is just like a regular mapping...
+
+Stream<String> stream = Stream.of(s1, s2, s3).flatMap(Function.identity());
+
