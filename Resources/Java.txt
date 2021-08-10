@@ -1,0 +1,45 @@
+What is a Spliterator?
+Building our own spliterator
+Using it to regroup the lines of a text file.
+
+Spliterator:
+The object on which a Stream is built.
+
+default Stream<E> stream(){
+  return StreamSupport.stream(spliterator(), false);
+}
+
+default Spliterator<E> spliterator(){
+    return Spliterators.spliterator(this, 0)
+}
+
+- The returned stream is built on a spliterator
+- A new interface in java 8, that models the access to the data for a Stream.
+
+- ArrayList and Hashset have different spliterators
+- For ArrayList:
+  public Spliterator<E> spliterator(){
+    return new ArrayListSpliterator<>(this, 0, -1, 0);
+  }
+
+For HashSet:
+   public Spliterator<E> spliterator(){
+     return new HashMap.KeySpliterator<E, Object>(map, 0, -1, 0, 0);
+   }
+
+- A Stream is divided into two things:
+ 1) An object to access the data, this is the Spliterator
+   - It is meant to be overriden to suit our needs
+ 2) An object to handle the processing of the data, this is the ReferencedPipeline
+
+
+                    Build our Own Spliterator
+
+ public interface Spliterator<T> spliterator{
+    boolean tryAdvance(Consumer<? super T> action);
+    Splitrerator<T> trySplit();
+    long estimateSize();
+    int characteristics();
+
+
+ }
