@@ -18,9 +18,9 @@ public class Main {
 
     public static void main(String[] args) {
 
-        Path path1 = Paths.get("Resources/file1.txt");
-        Path path2 = Paths.get("Resources/file2.txt");
-        Path path3 = Paths.get("Resources/file3.txt");
+        Path path1 = Paths.get("Resources/flatmap/file1.txt");
+        Path path2 = Paths.get("Resources/flatmap/file2.txt");
+        Path path3 = Paths.get("Resources/flatmap/file3.txt");
 
         Function<String, Stream<String>> converLinestoWords = line -> Stream.of(line.split(" "));
 
@@ -36,12 +36,9 @@ public class Main {
 
 //            Stream<String> words = Stream.of(lineStream1, lineStream2, lineStream3)
 //                    .flatMap(Function.identity()).flatMap(converLinestoWords);
-
 //            words.forEach(System.out::println);
         } catch (IOException e) {
             e.printStackTrace();
-
-//
         }
 
     }

@@ -1,0 +1,90 @@
+The Concept of Optional
+- Sometimes we do not know what the result should be
+  List<Person> people = new ArrayList<>();
+
+  int maxAge = people.stream()
+               .map(p-> p.getAge())
+               .reduce(0, Integer::max);
+    =========================================================
+               int maxAge = people.stream()
+                              .map(p-> p.getAge())
+                              .average(); // the result could by mull/empty
+to address the null value in the result. Optional is introduced
+
+OptionalInt average = people.stream().mapToInt(p-> p.getAge()). average();
+
+An Optional wraps a value that may or may not be there.
+
+A first pattern:
+
+Optional<Person> opt =  ....;
+
+if(opt.isPresent()){
+    Person p = opt.get();
+}else{
+    // there is nobody here ...
+}
+
+- It is the classical way of using an optional, but we can do much better!
+Person p1 = opt.orElse(Person.getDefault());
+Person p2 = opt.orElseGet(()-> Person.getDefault());
+
+
+Patterns to Build to Build an Optional
+- First, the default constructor of the Optional class is private
+- So we cannot build an optional using new
+- We have static methods:
+  Optional<String> empty = Optional.empty();
+  Optional<String> nonEmpty = Optional.of(s): // NullPointerException
+  Optional<String> couldBeEmpty = Optional.ofNullable(s);
+
+- if null is passed, then the returned optional is the empty one.
+
+
+Second Type of Patterns
+- There is another family of methods on the Optional class
+    public Optional<U> map(Functional<T, U> mapper);
+    public Optional<T> filter(Predicate<T> filter);
+    public void ifPresent(Consumer<T> consumer);
+
+
+First type of optional is a wrapper. Second type of patterns that sees optional as a special stream. That can hold only one or zero element.
+
+Advance use of Optional
+No nulls, no exceptions parallel computations
+
+Let us write a new math class!
+
+public class NewMath{
+
+    public static Optional<Double> sqrt(double d){
+     return d > 0d ? Optional.of(Math.sqrt(d)): Optional.empty();
+     }
+
+    public static Optional<Double> inv(Double d) {
+     return d !=0d ? Optional.of(1d/d): Optional.empty();
+    }
+
+}
+
+Function<Double, Stream<Double>> invSqrt =
+d->NewMath.inv(d)
+          .flatMap(d -> NewMath.sqrt(d))
+          .orElseGet(()->Stream.empty());
+
+
+List<Double> doubles = ...;
+
+List<Double> invSqrtOfDoubles = doubles.parallel()
+                                .flatMap(invSqrt)
+                                .collect(Collectors.toList());
+                                // collects the elements in a list
+
+
+
+
+
+
+
+
+

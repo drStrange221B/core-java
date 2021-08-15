@@ -1,0 +1,49 @@
+Going Parallel
+- To allow for faster computation
+- To leverage the multicore
+- Multithread != parallel
+- Multithread: one process = one thread, so many processes at the same time
+  - Problems: race condition, thread synchronization, variable visibility
+- Parallel: one process = many thread, to go faster
+  - Problems: algorithm, data distribution among the CPU cores
+
+                    Parallel Streams
+- Two Patterns:
+// call parallel on an existing stream
+List<Person> people = ...;
+people.parallelStream()
+      .filter(Person -> person.getAge()>20)
+      .forEach(System.out::println);
+
+
+people.stream().parallel()
+      .filter(Person -> person.getAge()>20)
+      .sorted()
+      .forEach(System.out::println);
+
+- The order in which the people will be printed out is not guaranteed
+- To guarantee the order of the elements, we must use sorted()
+
+
+Stateful vs. Stateless Operations
+Caveats with Parallel Stream
+- Parallel Streams are built on top of the fork/join pattern
+- Some things are to be avoided when computing things with the fork/join
+- Synchronization and visibility issues!
+- Stateful streams will not be computed efficiently in parallel
+
+
+            Tuning Parallelism
+- we can lunch our computattions in our own pool:
+List<Person> persons = ...;
+
+ForkJoinPool fjp = new ForkJoinPool(2);
+fjp.submit(
+       ()->
+        person.stream().parallel()   // this is an implementation of Callable<Integer>
+        .mapToInt(p->p.getAge())
+        .filter(age-> age>20)
+        .average()
+       ).get(); //from Future
+
+

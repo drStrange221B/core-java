@@ -26,3 +26,71 @@ Method flatMap()
 
 Stream<String> stream = Stream.of(s1, s2, s3).flatMap(Function.identity());
 
+
+A Stream Has a State
+- The Spliterator interface describes how to access the data of the source
+  - This is the interface we want to implement if we need to consume data from a custom source
+- Let us have a look at the characteristics() method of this implementation
+    public int characteristics(){
+        return Spliterator.ORDERED | Spliterator.SIZED | Spliterator.SUBSIZED;
+    }
+
+- Ordered, sized and subsized are part of a set of bits that describes a stream
+
+
+
+What is a Stream of Numbers?
+- Let us take another example: we would like to compute the average of the ages our list of people
+
+List<Person> person = ....;
+people.stream().
+        .mapToInt(person -> person.getAge())
+        .filter(age-> age>20)
+        //.mapToInt(i->i)
+        .average();
+Convert Stream<Integer> to stream of IntStream.
+
+- Streams of numbers are there to avoid the cost of boxing/ unboxing
+- Three types: IntStream, LongStream and DoubleStream
+
+//build from a varargs
+LongStream streamOfLongs = LongStream.of(1L, 2L, 3L);
+
+// convert from a Stream<Integer>
+IntStream streamOfInts = people.stream().mapToInt(People::getAge);
+
+//Box a Stream if needed
+Stream<Long> boxedStream = LongStream.of(1L, 2L, 3L).boxed();
+
+//box a Stream if needed
+Stream<Long> boxedStream = LongStream.of(1L, 2L, 3L).mapToObj(l->l);
+
+
+Stream of numbers have special methods, not on Stream<T>
+
+//on IntStream
+int sum = intStream.sum();
+
+OptionalInt min = intStream.min();
+OptionalInt max = intStream.max();
+
+OptionalDouble average = intStream.average();
+
+IntSummaryStatistics stats = intStream.summaryStatistics();
+
+Summary statistics compute sum, min, max, count and average in one pass
+
+Focus on summaryStatistics()
+
+public class IntSummaryStatistics implements IntConsumer{
+
+    public void accept(int value)
+    {
+        ++count;
+        sum +=value;
+        min=Math.min(min,value);
+        max=Math.max(max,value);
+
+
+    }
+

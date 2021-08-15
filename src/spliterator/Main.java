@@ -14,7 +14,7 @@ public class Main {
 
 //        System.out.println(System.getProperty("user.home"));
 
-        Path path = Paths.get("Resources/people.txt");
+        Path path = Paths.get("Resources/custom-spliterator/people.txt");
 
 
         try(Stream<String> lines = Files.lines(path)){
