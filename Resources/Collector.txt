@@ -1,0 +1,126 @@
+Collector: Reduction in a container. A collector is a special type of reduction but not aggregations.
+           it is a terminal operation, that triggers the computation of the stream.
+
+first Example:
+List<String> peopleNames = ...;
+
+List<String> result = new ArrayList<>();
+
+peopleNames.stream()
+           .filter(s-> !s.isEmpty())
+           .forEach(s->result.add(s));
+
+There is issue with this approach:
+1) Elements added to an external list which is final, that cannot be accessed concurrently
+2) We cannot use parallel stream.
+eg.   below code cannot be achieved
+    peopleNames.stream().parallel()
+               .filter(s->!s.isEmpty())
+               .forEach(s->result.add(s));
+
+Use of Collector api to collect to the list. Also called mutable collection, as the collection takes places in a mutable
+container
+
+Eg.
+ List<String> peopleName = ...;
+ List<String> result = new ArrayList<>();
+
+ peopleNames.stream().parallel()
+            .filter(s->!s.isEmpty())
+            .collect(Collectors.toList());
+
+
+The Collectors Class
+- The JDK provides a factory class: Collectors
+- Collecting data is about gathering data in a mutable container
+  - A String(concatenation using StringBuffer)
+  - A Collection(adding into List set etc)
+  - A HashMap(grouping by a criteria)
+
+We have Collector is the interface that models the collectors
+Collectors is the class factory to build collector
+ - Most collectors can be built though the factory
+
+
+Collecting a Max
+Pattern:
+List<Person> people = ...;
+Optional<Person> oldest = people.stream()
+                          .collect(Collectors.maxBy(Comparator.comparing(p->p.getAge()));
+
+
+double average = people.stream()
+                 .collect(
+                    Collectors.averagingDouble(p->p.getAge());
+
+Collecting in a String
+
+String name = people.stream()
+                .map(p->p.getName())
+                .collect(Collectors.joining(", "));
+
+Barbara, Charles, Sharon, Peter
+
+Collecting in a Set
+Set<String> names = people.stream().map(p->p.getName())
+                          .collect(Collectors.toSet());
+
+Collection in a custom collector
+
+TreeSet<String> names = people.stream()
+                        .map(p->p.getName())
+                        .collect(Collectors.toCollection(()->new TreeSet());
+
+Collecting in a Map
+- Partitioning by a predicate:
+
+Map<Boolean, List<People>> peopleByAge = people.stream()
+                                         .collect(Collectors.partitioningBy(person -> person.getAge()>21));
+
+Map<Integer, List<Person>> peopleByAge = people.stream()
+                                         .collect(Collectors.groupBy(person -> person.getAge());
+
+Grouping and Counting:
+List<Person> people = ...;
+
+Map<Integer, Long> peopleByAge = people.stream()
+                                 .collect(Collectors.groupingBy(people->people.getAge(),
+                                  Collectors.counting());  //the << downstream >> collector
+
+Grouping, mapping and collecting in a TreeSet:
+
+people.stream().collect(Collec
+List<Person> people = ...;
+Map<Integer, TreeSet<String>> namesByAges =tors.groupingBy(person->person.getId(), Collectors
+                                           .mapping(person->person.getName(), Collectors.toCollection(()->new TreeSet()));
+
+
+Grouping in a TreeMap, mapping and collecting in a TreeSet
+
+TreeMap<Integer, TreeSet<String>> namesByAge =
+                 people.stream()
+                 .collect(
+                 Collectors.groupingBy(person->person.getId(),
+                 ()->new HashMap(),
+                 Collectors.mapping(person::getName, Collectors.toCollection(()->new TreeSet()));
+
+
+
+Collecting in an Immutable Map
+
+Collecting in an immutable Map:
+
+List<Person> people = ...;
+
+Map<Integer, List<Person>> peopleByAge =
+
+people.stream()
+      .collect(
+          Collectors.collectingAndThen(
+          Collectors.groupingBy(person -> person.getAge(), Collections::unmodifiableMap));
+
+
+
+
+
+

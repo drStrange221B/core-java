@@ -1,0 +1,45 @@
+Collectors Under the Hood
+ - A collector is in face made of three elements
+ - the first element is used to build the resulting container
+   - For instance an ArrayList, or a HashMap
+ - The second element adds an object from the stream to the container
+   - For instance, it adds  an object to an ArrayList
+ - The third elements us used for parallelism
+   - It is used to merge together two partially filled containers
+
+1) Building an Empty Container
+- Example of an ArrayList:
+
+()-> ArrayList<>();
+
+Supplier<List<Person>> supplier = () -> new ArrayList<Person>();
+
+2) Adding an Object to the Container
+- This step is the accumulating step, and requires an accumulator:
+
+BiConsumer<Person, List<Person>> accumulator = (p, list) -> list.add(p);
+
+3) Merging Partially Filled Containers
+- This step is call the combining step, and requires a combiner
+  BinaryOperator<List<Person>> combiner = (list1, list2) -> {
+                                                                list1.addAll(list2);
+                                                                return list1;
+                                                             }
+
+ Putting It All Together
+ - A collector can be built out of these three elements
+   Collector collector = Collector.of(
+                         ()-> new ArrayList(),
+                         (person, list) -> list.add(person),
+                         (list1, list2) -> {
+                                            list1.addAll(list2);
+                                            return list1;
+                                            },
+                                            Collectors.Characteristics.IDENTITY_FINISH);
+
+- There are three flags in Collectors.Characteristics
+  - IDENTITY_FINISH
+  - CONCURRENT
+  - UNORDERED
+
+
